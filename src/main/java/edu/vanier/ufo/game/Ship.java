@@ -147,6 +147,8 @@ public class Ship extends Sprite {
      */
     private Circle hitBounds;
 
+    private int numLives = 3;
+    
     public Ship() {
         // Load one image.
         Image shipImage;
@@ -525,5 +527,13 @@ public class Ship extends Sprite {
             shieldFade.stop();
             setCollisionBounds(hitBounds);
         }
+    }
+
+    public int getNumLives() {
+        return numLives;
+    }
+
+    public void setNumLives(int numLives) {
+        this.numLives = numLives;
     }
 }

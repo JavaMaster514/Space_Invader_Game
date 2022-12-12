@@ -1,9 +1,12 @@
 package edu.vanier.ufo.engine;
 
+import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.Node;
+import javafx.util.Duration;
 
 /**
  * A class used to represent a sprite of any type on the scene.  

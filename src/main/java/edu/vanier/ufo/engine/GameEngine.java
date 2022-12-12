@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -32,7 +33,7 @@ public abstract class GameEngine {
     /**
      * All nodes to be displayed in the game window.
      */
-    private Group sceneNodes;
+    private Pane sceneNodes;
     /**
      * The game loop using JavaFX's <code>Timeline</code> API.
      */
@@ -254,7 +255,7 @@ public abstract class GameEngine {
      * @return Group The root containing many child nodes to be displayed into
      * the Scene area.
      */
-    public Group getSceneNodes() {
+    public Pane getSceneNodes() {
         return sceneNodes;
     }
 
@@ -265,7 +266,7 @@ public abstract class GameEngine {
      * @param sceneNodes The root container having many children nodes to be
      * displayed into the Scene area.
      */
-    protected void setSceneNodes(Group sceneNodes) {
+    protected void setSceneNodes(Pane sceneNodes) {
         this.sceneNodes = sceneNodes;
     }
 

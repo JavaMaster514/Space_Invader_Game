@@ -3,11 +3,20 @@ package edu.vanier.ufo.ui;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
+import static edu.vanier.ufo.helpers.ResourcesManager.BACK_GROUND_1;
+import static edu.vanier.ufo.helpers.ResourcesManager.LIVES;
 import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;;
+import javafx.scene.Scene;
+import javafx.scene.layout.Background;
+import javafx.geometry.Side;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -36,6 +45,10 @@ public class GameWorld extends GameEngine {
     // mouse press pt label
     Label mousePressPtLabel = new Label();
     Ship spaceShip = new Ship();
+    
+    VBox Hud = new VBox();
+    Pane lives = new Pane();
+    Label currentPoints = new Label(); static int points;
 
     public GameWorld(int fps, String title) {
         super(fps, title);
@@ -52,8 +65,19 @@ public class GameWorld extends GameEngine {
         primaryStage.setTitle(getWindowTitle());
         //primaryStage.setFullScreen(true);
 
+        Pane root = new Pane();
+        
+        root.setBackground(new Background(
+                new BackgroundImage(
+                        new Image(BACK_GROUND_1),
+                        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                        new BackgroundPosition(Side.LEFT, 0, true, Side.BOTTOM, 0, true),
+                        new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, false, true)
+                )
+        ));
+        
         // Create the scene
-        setSceneNodes(new Group());
+        setSceneNodes(root);
         setGameSurface(new Scene(getSceneNodes(), 1000, 600));
 
         // Change the background of the main scene.
@@ -71,7 +95,6 @@ public class GameWorld extends GameEngine {
         getSceneNodes().getChildren().add(0, spaceShip.getNode());
         // mouse point
         VBox stats = new VBox();
-
         HBox row1 = new HBox();
         mousePtLabel.setTextFill(Color.WHITE);
         row1.getChildren().add(mousePtLabel);
@@ -80,13 +103,29 @@ public class GameWorld extends GameEngine {
         row2.getChildren().add(mousePressPtLabel);
         stats.getChildren().add(row1);
         stats.getChildren().add(row2);
-        
+        stats.getChildren().add(currentPoints);
         //TODO: Add the HUD here.
+        currentPoints.setTextFill(Color.WHITE);
+        currentPoints.setText("Points : " + points);
+        HBox row11 = new HBox(currentPoints);
+        //points.getChildren().add(currentPoints);
+        for(int i =0; i<spaceShip.getNumLives(); i++){
+            ImageView image = new ImageView(LIVES);
+            image.scaleXProperty().setValue(0.25);
+            image.scaleYProperty().setValue(0.25);
+            image.setLayoutX(i*30-40);
+            lives.getChildren().add(i,image);
+        }
+        HBox row22 = new HBox(lives);
+        Hud.getChildren().addAll(row22,row11);
+        Hud.setLayoutX(getSceneNodes().getWidth()/2);
         getSceneNodes().getChildren().add(0, stats);
+        getSceneNodes().getChildren().add(Hud);
 
 
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
+        getSoundManager().loadSoundEffects("alienKilled", getClass().getClassLoader().getResource(ResourcesManager.SOUND_ALIEN_KILLED));
     }
 
     /** 
@@ -95,8 +134,45 @@ public class GameWorld extends GameEngine {
      * @param primaryStage The primary stage (app window).
      */
     private void setupInput(Stage primaryStage) {
-        //System.out.println("Ship's center is (" + spaceShip.getCenterX() + ", " + spaceShip.getCenterY() + ")");
-
+       primaryStage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            double velocity = 1000;
+        if( null!=key.getCode()) switch (key.getCode()) {
+                case W:
+                    spaceShip.plotCourse(spaceShip.getCenterX(),  spaceShip.getCenterY() - velocity, true);
+                    break;
+                case S:
+                    spaceShip.plotCourse(spaceShip.getCenterX(),  spaceShip.getCenterY() + velocity, true);
+                    break;
+                case A:
+                    spaceShip.plotCourse(spaceShip.getCenterX() - velocity,  spaceShip.getCenterY(), true);
+                    break;
+                case D:
+                    spaceShip.plotCourse(spaceShip.getCenterX() + velocity,  spaceShip.getCenterY(), true);
+                    break;
+                default:
+                    break;
+            }
+        });
+        
+         primaryStage.getScene().addEventHandler(KeyEvent.KEY_RELEASED, (key) -> {
+        if( null!=key.getCode()) switch (key.getCode()) {
+                case W:
+                    spaceShip.applyTheBrakes(spaceShip.getCenterX(),  spaceShip.getCenterY());
+                    break;
+                case S:
+                    spaceShip.applyTheBrakes(spaceShip.getCenterX(),  spaceShip.getCenterY());
+                    break;
+                case A:
+                    spaceShip.applyTheBrakes(spaceShip.getCenterX() ,  spaceShip.getCenterY());
+                    break;
+                case D:
+                    spaceShip.applyTheBrakes(spaceShip.getCenterX(),  spaceShip.getCenterY());
+                    break;
+                default:
+                    break;
+            }
+        });
+        
         //TODO change the controls to WASD
         EventHandler fireOrMove = (EventHandler<MouseEvent>) (MouseEvent event) -> {
             mousePressPtLabel.setText("Mouse Press PT = (" + event.getX() + ", " + event.getY() + ")");
@@ -107,7 +183,7 @@ public class GameWorld extends GameEngine {
 
                 // Aim
                 spaceShip.plotCourse(event.getX(), event.getY(), true);
-
+                spaceShip.applyTheBrakes(spaceShip.getCenterX(), spaceShip.getCenterY());
                 // fire
                 Missile missile = spaceShip.fire();
                 getSpriteManager().addSprites(missile);
@@ -126,9 +202,9 @@ public class GameWorld extends GameEngine {
                 // determine when all atoms are not on the game surface. Ship should be one sprite left.
                 
                 // stop ship from moving forward
-                spaceShip.applyTheBrakes(event.getX(), event.getY());
+            //    spaceShip.applyTheBrakes(event.getX(), event.getY());
                 // move forward and rotate ship
-                spaceShip.plotCourse(event.getX(), event.getY(), true);
+            //    spaceShip.plotCourse(event.getX(), event.getY(), true);
             }
         };
 
@@ -151,6 +227,7 @@ public class GameWorld extends GameEngine {
         };
 
         primaryStage.getScene().setOnMouseMoved(showMouseMove);
+        primaryStage.getScene().setFill(Color.BLACK);
     }
 
     /**
@@ -275,7 +352,9 @@ public class GameWorld extends GameEngine {
     static int count = 1;
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        //TODO: implement collision detection here.
+        //TODO: Maybe add a sound every time an invader dies
+        //TODO also add lives that run out every time the space ship collides with an invader
+        if(!(spriteA instanceof Missile && spriteB instanceof Missile)){
         if (spriteA != spriteB && !(spriteA instanceof Missile) && !(spriteB instanceof Missile)) {
         
             if(!(spriteA instanceof Atom && spriteB instanceof Atom)){
@@ -283,19 +362,46 @@ public class GameWorld extends GameEngine {
 
                     if (spriteA != spaceShip) {
                         spriteA.handleDeath(this);
+                        
                     }
                     if (spriteB != spaceShip) {
                         spriteB.handleDeath(this);
                     }
+                    if(spaceShip.getNumLives()>0){
+                        lives.getChildren().remove(spaceShip.getNumLives()-1);
+                        spaceShip.setNumLives(spaceShip.getNumLives()-1);
+                    }
+                    if(spaceShip.getNumLives() <= 0){
+                        spaceShip.handleDeath(this);
+                    }
+                    return true;
                 }
             }
         }
         else if(((spriteA instanceof Missile && spriteB instanceof Atom) || (spriteB instanceof Missile && spriteA instanceof Atom)) && spriteA != spriteB){
             if (spriteA.collide(spriteB)) {
+                
+                /*if(spriteA instanceof Missile && spriteB instanceof Atom){
+                    spriteB = (Atom) spriteB;
+                    spriteB.implode(this);
+                }else if(spriteB instanceof Missile && spriteA instanceof Atom){
+                    spriteA = (Atom) spriteA;
+                    spriteA.implode(this);
+                }*/
+                points = points + 5;
+                currentPoints.setText("Points : " + points);
                 spriteA.handleDeath(this);
                 spriteB.handleDeath(this);
+                System.out.println(count);
+                System.out.println("SpriteA" + spriteA.toString());
+                System.out.println("SpriteB" + spriteB.toString());
+                System.out.println("=====");
+                getSoundManager().playSound("alienKilled");
+                count++;
+                return true;
             }
             
+        }
         }
         return false;
     }

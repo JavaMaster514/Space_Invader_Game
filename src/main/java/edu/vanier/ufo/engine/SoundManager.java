@@ -63,4 +63,10 @@ public class SoundManager {
         soundPool.shutdown();
     }
 
+    public Map<String, AudioClip> getSoundEffectsMap() {
+        return soundEffectsMap;
+    }
+    
+    
+
 }

@@ -24,6 +24,12 @@ public class ResourcesManager {
     // Rocket images
     public static final String ROCKET_SMALL = IMAGES_FOLDER + "rocket.png";
     public static final String ROCKET_FIRE = IMAGES_FOLDER + "missile.png";
+    
+    //Back ground Images
+    public static final String BACK_GROUND_1 = IMAGES_FOLDER + "space1.png";
+
+    //hearts that would represent the lives left for the space ship
+    public static final String LIVES = IMAGES_FOLDER + "heart.png";
 
     // Invader sprites.
     public static final String INVADER_LARGE_SHIP = IMAGES_FOLDER + "large_invader_b.png";
@@ -34,7 +40,8 @@ public class ResourcesManager {
     public static final String INVADER_SCI_FI = IMAGES_FOLDER + "sci-fi.png";
 
     // Sound effect files
-    public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
+    public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";
+    public static final String SOUND_ALIEN_KILLED = SOUNDS_FOLDER + "alienKilled.wav";     
     //public static final String SOUND_LASER = SOUNDS_FOLDER + "alienMove2.wav";    
     
     

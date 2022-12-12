@@ -56,13 +56,16 @@ public class Atom extends Sprite {
      *
      * @param gameWorld - game world
      */
+   //static int count;
     public void implode(final GameEngine gameWorld) {
+        //count ++;
+       // System.out.println(count + " implode method called");
         vX = vY = 0;
         Node currentNode = getNode();
         /* TODO: fix this code to add explosing effect*/
         //Sprite explosion = new Atom(ResourcesManager.ROCKET_FIRE);                
         //gameWorld.getSceneNodes().getChildren().add(explosion.getNode());
-        FadeTransition ft = new FadeTransition(Duration.millis(300), currentNode);
+        FadeTransition ft = new FadeTransition(Duration.millis(50000), getNode());
         ft.setFromValue(vX);
         ft.setToValue(0);
         ft.setOnFinished((ActionEvent event) -> {
@@ -77,4 +80,11 @@ public class Atom extends Sprite {
         implode(gameWorld);
         super.handleDeath(gameWorld);
     }
+
+    @Override
+    public String toString() {
+        return "this is an Atom";
+    }
+    
+    
 }

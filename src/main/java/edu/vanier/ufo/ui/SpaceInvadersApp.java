@@ -2,8 +2,10 @@ package edu.vanier.ufo.ui;
 
 import edu.vanier.ufo.engine.GameEngine;
 import edu.vanier.ufo.helpers.ResourcesManager;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 
 /**
@@ -29,6 +31,13 @@ public class SpaceInvadersApp extends Application {
         gameWorld.initialize(primaryStage);
         // kick off the game loop
         gameWorld.beginGameLoop();
+        
+       /* Map<String, AudioClip> newmap = gameWorld.getSoundManager().getSoundEffectsMap();
+        
+        for(String key : newmap.keySet()){
+            System.out.println(key);
+        }*/
+        
         // display window
         primaryStage.show();
     }

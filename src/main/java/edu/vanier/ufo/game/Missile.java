@@ -12,4 +12,8 @@ public class Missile extends Atom {
         super(imagePath);
     }
     
+    @Override
+    public String toString() {
+        return "this is a Missile";
+    }
 }
